@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ post["제목"] }} — OurBlog{% endblock %}
+{% block content %}
+<article class="single-post">
+  <header class="post-header">
+    <div class="post-meta">
+      <span class="author">{{ post["작성자"] }}</span>
+      <span class="date">{{ post["날짜"] }}</span>
+    </div>
+    <h1>{{ post["제목"] }}</h1>
+  </header>
+
+  <div class="post-content">
+    {{ post["내용"] | replace('\n', '<br>') | safe }}
+  </div>
+
+  {% if post["파일명"] %}
+  <div class="file-section">
+    <h3>📎 첨부 파일</h3>
+    <a href="{{ post['파일URL'] }}" target="_blank" class="file-link">
+      🗂️ {{ post["파일명"] }} — Google Drive에서 열기 / 수정하기
+    </a>
+  </div>
+  {% endif %}
+
+  <div class="post-footer">
+    <a href="/" class="back-link">← 목록으로</a>
+  </div>
+</article>
+{% endblock %}
