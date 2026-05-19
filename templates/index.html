@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}전체 글 — OurBlog{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>모든 글을 한눈에 👀</h1>
+  <p>누구나 자유롭게 글을 작성하고 파일을 공유할 수 있습니다.</p>
+  <a href="/write" class="btn-primary">✏️ 글쓰기</a>
+</section>
+
+<section class="posts">
+  {% if posts %}
+    {% for post in posts %}
+    <article class="post-card">
+      <div class="post-meta">
+        <span class="author">{{ post["작성자"] }}</span>
+        <span class="date">{{ post["날짜"] }}</span>
+      </div>
+      <h3><a href="/post/{{ post['ID'] }}">{{ post["제목"] }}</a></h3>
+      <p>{{ post["내용"][:100] }}{% if post["내용"]|length > 100 %}...{% endif %}</p>
+      {% if post["파일명"] %}
+      <a href="{{ post['파일URL'] }}" target="_blank" class="file-badge">
+        📎 {{ post["파일명"] }}
+      </a>
+      {% endif %}
+    </article>
+    {% endfor %}
+  {% else %}
+    <div class="empty">아직 게시물이 없습니다. 첫 글을 작성해보세요!</div>
+  {% endif %}
+</section>
+{% endblock %}
