@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}글쓰기 — OurBlog{% endblock %}
+{% block content %}
+<div class="write-wrap">
+  <h1>✏️ 새 글 작성</h1>
+
+  <div class="form-group">
+    <label>제목 *</label>
+    <input type="text" id="title" placeholder="제목을 입력하세요"/>
+  </div>
+  <div class="form-group">
+    <label>작성자</label>
+    <input type="text" id="author" placeholder="이름 (선택, 비우면 익명)"/>
+  </div>
+  <div class="form-group">
+    <label>내용 *</label>
+    <textarea id="content" rows="10" placeholder="내용을 입력하세요..."></textarea>
+  </div>
+  <div class="form-group">
+    <label>엑셀 파일 첨부 (선택)</label>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv"/>
+    <small>업로드된 파일은 구글 드라이브에 저장되며 누구나 열람·수정 가능합니다.</small>
+  </div>
+
+  <button class="btn-primary" onclick="submitPost()">게시물 올리기 →</button>
+  <div id="msg" class="msg"></div>
+</div>
+
+<script>
+async function submitPost() {
+  const title   = document.getElementById("title").value.trim();
+  const author  = document.getElementById("author").value.trim();
+  const content = document.getElementById("content").value.trim();
+  const file    = document.getElementById("fileInput").files[0];
+
+  if (!title || !content) {
+    showMsg("제목과 내용을 입력해주세요.", "error");
+    return;
+  }
+
+  const btn = document.querySelector(".btn-primary");
+  btn.disabled = true;
+  btn.textContent = "업로드 중...";
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("author", author || "익명");
+  formData.append("content", content);
+  if (file) formData.append("file", file);
+
+  try {
+    const res  = await fetch("/api/post", { method: "POST", body: formData });
+    const data = await res.json();
+    if (data.success) {
+      showMsg("게시물이 등록되었습니다! 이동 중...", "success");
+      setTimeout(() => window.location.href = `/post/${data.id}`, 1500);
+    } else {
+      showMsg("오류: " + data.error, "error");
+      btn.disabled = false;
+      btn.textContent = "게시물 올리기 →";
+    }
+  } catch(e) {
+    showMsg("네트워크 오류가 발생했습니다.", "error");
+    btn.disabled = false;
+    btn.textContent = "게시물 올리기 →";
+  }
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById("msg");
+  el.textContent = text;
+  el.className = "msg " + type;
+}
+</script>
+{% endblock %}
